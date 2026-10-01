@@ -10,6 +10,7 @@ use App\Exception\TransactionNotDeletableException;
 use App\Exception\TransactionNotFoundException;
 use App\Exception\UserNotFoundException;
 use App\Form\CreateTransactionType;
+use App\Form\CreateTransactionResetType;
 use App\Form\TransferTransactionType;
 use App\Repository\TransactionRepository;
 use App\Service\MoneyParser;
@@ -31,6 +32,48 @@ class TransactionWriteController extends AbstractController
         private readonly LoggerInterface $logger,
     ) {
     }
+
+    #[Route('/user/{id}/transactions/reset', name: 'transactions_reset', methods: ['POST'], requirements: ['id' => '\d+'])]
+    public function reset(User $user, Request $request): Response
+    {
+        if ($user->isDisabled()) {
+            $this->addFlash('error', $this->translator->trans('transactions.errors.account_disabled'));
+
+            return $this->redirectToRoute('users_detail', ['id' => $user->getId()], Response::HTTP_SEE_OTHER);
+        }
+	if (!str_starts_with($user->getName(), "#")) {
+            $this->addFlash('error', $this->translator->trans('transactions.errors.invalid'));
+	    
+	    return $this->redirectToRoute('users_detail', ['id' => $user->getId()], Response::HTTP_SEE_OTHER);
+	}
+
+        $form = $this->createForm(CreateTransactionResetType::class, null, ['user_id' => $user->getId()]);
+        $form->handleRequest($request);
+
+        if (!$form->isSubmitted() || !$form->isValid()) {
+            $this->addFlash('error', $this->translator->trans('transactions.errors.invalid'));
+
+            return $this->redirectToRoute('users_detail', ['id' => $user->getId()], Response::HTTP_SEE_OTHER);
+        }
+    
+        $data = $form->getData();
+        $comment = $data['comment'] ?: "Reset";
+	$amount = $user->getBalance() * -1;
+        try {
+            $tx = $this->transactionService->resetForUser($user, $amount, $comment);
+            $this->addFlash('success', $this->translator->trans(
+                'transactions.flash.dispense_success'
+            ));
+            $this->addFlash('transaction_success', '1');
+        } catch (TransactionBoundaryException|AccountBalanceBoundaryException|TransactionInvalidException) {
+            $this->addFlash('error', $this->translator->trans('transactions.errors.boundary'));
+        } catch (\Throwable $e) {
+            $this->logger->error('Transaction create failed unexpectedly.', ['exception' => $e, 'user' => $user->getId()]);
+            $this->addFlash('error', $this->translator->trans('transactions.errors.generic'));
+        }
+
+        return $this->redirectToRoute('users_detail', ['id' => $user->getId()], Response::HTTP_SEE_OTHER);
+    } 
 
     #[Route('/user/{id}/transactions/create', name: 'transactions_create', methods: ['POST'], requirements: ['id' => '\d+'])]
     public function create(User $user, Request $request): Response

@@ -4,6 +4,7 @@ namespace App\Controller\Ui;
 
 use App\Entity\User;
 use App\Form\CreateTransactionType;
+use App\Form\CreateTransactionResetType;
 use App\Form\CreateUserType;
 use App\Form\EditUserType;
 use App\Form\TransferTransactionType;
@@ -137,6 +138,7 @@ class UserController extends AbstractController
             'dispense_steps' => $dispenseSteps,
             // one composer for both directions; the clicked submit button supplies direction
             'custom_form' => $this->createForm(CreateTransactionType::class, null, ['user_id' => $user->getId()])->createView(),
+            'reset_form' => $this->createForm(CreateTransactionResetType::class, null, ['user_id' => $user->getId()])->createView(),
             'transfer_form' => $transferForm,
         ];
     }

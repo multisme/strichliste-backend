@@ -1,0 +1,31 @@
+{# without the guard the card renders as an empty white box when nothing is enabled #}
+{% if send.deposit_enabled or send.dispense_enabled or send.deposit_custom or send.dispense_custom %}
+    {# one CreateTransactionType view names the fields for the step forms and the custom row #}
+    {%- set form = send.reset_form -%}
+    <div class="step-card">
+        {% if send.deposit_enabled %}
+            <div class="step-group" role="group" aria-labelledby="deposit-caption">
+                <p class="step-caption" id="deposit-caption">{{ 'Reset'|trans }}</p>
+                <div class="step-grid">
+                        <form method="post" action="{{ path('transactions_reset', {id: user.id}) }}" class="step-form">
+                            <input
+                                type="hidden"
+                                name="{{ form._token.vars.full_name }}"
+                                value="{{ form._token.vars.value }}"
+                            />
+                            <button
+                                type="submit"
+                                class="step-btn step-btn--green"
+                                {% if false %} disabled aria-describedby="deposit-disabled-help"{% endif %}
+                            >
+                                {{ "reset" }}
+                            </button>
+                        </form>
+                </div>
+            </div>
+            {% if send.deposit_steps|filter(s => s.disabled)|length > 0 %}
+                <p id="deposit-disabled-help" class="form-help">{{ 'transactions.step_disabled_help'|trans }}</p>
+            {% endif %}
+        {% endif %}
+    </div>
+{% endif %}
