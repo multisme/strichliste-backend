@@ -1051,6 +1051,10 @@ body {
     gap: 1rem;
 }
 
+#reset-grid.step-grid{
+	grid-template-columns: 1fr;
+}
+
 .step-form {
     display: contents;
 }
@@ -1078,6 +1082,11 @@ body {
 .step-btn--red {
     background: var(--buttonRedBackground);
     color: var(--buttonRedFont);
+}
+
+.step-btn--yellow {
+    background: var(--buttonYellowBackground);
+    color: var(--buttonYellowFont);
 }
 
 .step-btn:hover:not(:disabled) {

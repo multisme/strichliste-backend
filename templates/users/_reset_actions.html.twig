@@ -5,8 +5,8 @@
     <div class="step-card">
         {% if send.deposit_enabled %}
             <div class="step-group" role="group" aria-labelledby="deposit-caption">
-                <p class="step-caption" id="deposit-caption">{{ 'Reset'|trans }}</p>
-                <div class="step-grid">
+                <p class="step-caption" id="reset-caption">{{ 'Reset'|trans }}</p>
+                <div id="reset-grid" class="step-grid">
                         <form method="post" action="{{ path('transactions_reset', {id: user.id}) }}" class="step-form">
                             <input
                                 type="hidden"
@@ -15,10 +15,10 @@
                             />
                             <button
                                 type="submit"
-                                class="step-btn step-btn--green"
+                                class="step-btn step-btn--yellow"
                                 {% if false %} disabled aria-describedby="deposit-disabled-help"{% endif %}
                             >
-                                {{ "reset" }}
+                                {{ "Reset balance" | upper }}
                             </button>
                         </form>
                 </div>

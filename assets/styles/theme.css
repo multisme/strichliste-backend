@@ -109,6 +109,7 @@ html {
     --componentBackgroundDark: #fff;
     --componentBackgroundLight: #fff;
     --greenLight: #cfe9d1;
+    --yellowLight: #f5f500;
     --mainBackground: #f2f3f2;
     --primary: #28333d;
     --redLight: #ffdce0;
@@ -126,10 +127,12 @@ html {
     --redText: #b00020;
     --buttonGreenFont: #0a7029;
     --buttonRedFont: #b00020;
+    --buttonYellowFont: #444444;
     --buttonHighlightFont: #e8eaeb;
     --buttonHighlightBackground: #213440;
     --buttonGreenBackground: #cbf5d7;
     --buttonRedBackground: #ffdce0;
+    --buttonYellowBackground: #fcfc0f50;
     --buttonDefaultBackground: #fff;
     --buttonDefaultFont: #58697d;
     /* faint but real: hover promotes level1 -> level2 and the lift has to read */
