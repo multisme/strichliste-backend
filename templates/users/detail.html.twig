@@ -53,6 +53,8 @@
         <aside class="user-detail-grid__actions">
             {% if send %}
                 {% include 'users/_default_actions.html.twig' with {send: send, user: user} only %}
+            {% endif %}
+            {% if reset %}
                 {% include 'users/_reset_actions.html.twig' with {send: send, user: user} only %}
             {% endif %}
         </aside>
