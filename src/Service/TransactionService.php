@@ -23,6 +23,7 @@ class TransactionService
 {
     public function __construct(
         private readonly SettingsService $settingsService,
+        private readonly BankService $bankService,
         private readonly EntityManagerInterface $entityManager,
     ) {
         $connection = $this->entityManager->getConnection();
@@ -219,6 +220,11 @@ class TransactionService
 
     public function purchaseArticle(User $user, Article $article, int $quantity = 1, ?string $comment = null): Transaction
     {
+	$bank = $this->bankService->getBankUser();
+	if ($bank !== null){
+		$bankId = $bank->getId();
+        	return $this->doTransaction($user, null, $comment, $quantity, $article->getId(), $bankId);
+	}
         return $this->doTransaction($user, null, $comment, $quantity, $article->getId());
     }
 
