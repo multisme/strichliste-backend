@@ -50,9 +50,9 @@ class BankService
 	return $bank_user;
     }
 
-    public function getBankRabat(): ?int {
+    public function getBankRabat(): int {
     	$bank = $this->getBankUser();
-	$limit = $this->SettingsService->getOrDefault('bank.limit', null);
+	$limit = $this->settingsService->getOrDefault('bank.limit', null);
 	if ($bank !== null && $limit !== null){
 		if ($bank->getBalance() >= $limit){
 			return 2;

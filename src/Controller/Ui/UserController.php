@@ -12,6 +12,7 @@ use App\Repository\ArticleRepository;
 use App\Repository\TransactionRepository;
 use App\Repository\UserRepository;
 use App\Service\SettingsService;
+use App\Service\BankService;
 use App\Service\TransactionService;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
@@ -32,6 +33,7 @@ class UserController extends AbstractController
         private readonly TransactionService $transactionService,
         private readonly ArticleRepository $articleRepository,
         private readonly TranslatorInterface $translator,
+        private readonly BankService $bankService,
     ) {
     }
 
@@ -72,6 +74,13 @@ class UserController extends AbstractController
             'articles' => $this->articleRepository->findBy(['active' => true], ['name' => 'ASC']),
         ] : null;
 
+	$rabat = $this->bankService->getBankRabat();
+	$buyData['articles'] = array_map(function (object $item) use ($rabat): object {
+	    $item->setAmount(((float) $item->getAmount() / $rabat));
+	    return $item;
+	}, $buyData['articles']);
+	
+
         $recentMeta = array_map(fn ($tx) => [
             'tx' => $tx,
             'deletable' => $this->transactionService->isDeletable($tx),
@@ -86,7 +95,7 @@ class UserController extends AbstractController
             'showBuyTab' => $enabledTabs['buy'],
             'showPaypalTab' => $enabledTabs['paypal'],
             'send' => $sendData,
-            'buy' => $buyData,
+	    'buy' => $buyData,
         ]);
     }
 
