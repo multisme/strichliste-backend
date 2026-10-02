@@ -1,12 +1,16 @@
 parameters:
     strichliste:
 
+        bank:
+          name: "test_bank"
+          limit: 1000
         article:
             enabled: true
-            autoOpen: false
+            autoOpen: true
+            serach: true
 
         common:
-            idleTimeout: 30000 # Time in ms
+            idleTimeout: 10000 # Time in ms
 
         paypal:
             enabled: false
@@ -14,8 +18,7 @@ parameters:
             fee: 0
 
         user:
-            # See http://de.php.net/manual/en/datetime.formats.relative.php
-            stalePeriod: '10 day'
+            stalePeriod: '14 day' # See http://de.php.net/manual/en/datetime.formats.relative.php
 
         i18n:
             dateFormat: 'YYYY-MM-DD HH:mm:ss'
@@ -29,41 +32,38 @@ parameters:
         account:
             boundary:
                 upper: 20000
-                lower: -20000
+                lower: -200
 
         # Be aware: All amounts are in cents!
         payment:
             undo:
                 enabled: true
                 delete: false
-                timeout: '5 minute' # See http://de.php.net/manual/en/datetime.formats.relative.php
+                timeout: '1 hour' # See http://de.php.net/manual/en/datetime.formats.relative.php
 
             boundary:
-                upper: 15000
-                lower: -2000
+                upper: 10000
+                lower: -10000
 
             transactions:
                 enabled: true
 
             splitInvoice:
-                enabled: true
+                enabled: false
 
             deposit:
                 enabled: true
-                custom: true
+                custom: false
                 steps:
-                    - 50
                     - 100
                     - 200
                     - 500
                     - 1000
+                    - 2000
+                    - 5000
 
             dispense:
-                enabled: true
-                custom: true
+                enabled: false
+                custom: false
                 steps:
-                    - 50
                     - 100
-                    - 200
-                    - 500
-                    - 1000
