@@ -129,7 +129,7 @@ class UserController extends AbstractController
             (array) $this->settings->getOrDefault('payment.dispense.steps', [])
         );
 
-        return [
+        $ret =  [
             'deposit_enabled' => (bool) $this->settings->getOrDefault('payment.deposit.enabled', true),
             'deposit_custom' => (bool) $this->settings->getOrDefault('payment.deposit.custom', true),
             'deposit_steps' => $depositSteps,
@@ -137,10 +137,14 @@ class UserController extends AbstractController
             'dispense_custom' => (bool) $this->settings->getOrDefault('payment.dispense.custom', true),
             'dispense_steps' => $dispenseSteps,
             // one composer for both directions; the clicked submit button supplies direction
+	    'reset_form' => false,
             'custom_form' => $this->createForm(CreateTransactionType::class, null, ['user_id' => $user->getId()])->createView(),
-            'reset_form' => $this->createForm(CreateTransactionResetType::class, null, ['user_id' => $user->getId()])->createView(),
             'transfer_form' => $transferForm,
-        ];
+	];
+	if (str_starts_with($user->getName(), "#")){
+            $ret['reset_form'] = $this->createForm(CreateTransactionResetType::class, null, ['user_id' => $user->getId()])->createView();
+	}
+	return $ret;
     }
 
     #[Route('/user/active/add', name: 'users_create', methods: ['GET', 'POST'])]
