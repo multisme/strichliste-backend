@@ -148,8 +148,9 @@ class TransactionService
 
                 $transaction->setQuantity($quantity ?: 1);
 
+		$rabat = $this->bankService->getBankRabat();
                 if (null === $amount) {
-                    $amount = $article->getAmount() * $transaction->getQuantity() * -1;
+                    $amount = $article->getAmount() * $transaction->getQuantity() * -1 / $rabat;
                 }
 
                 $transaction->setArticle($article);
