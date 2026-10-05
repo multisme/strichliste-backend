@@ -29,6 +29,7 @@ class ArticleController extends AbstractController
         private readonly EntityManagerInterface $em,
         private readonly TranslatorInterface $translator,
         private readonly \App\Service\ArticleService $articleService,
+        private readonly \App\Service\BankService $bankService,
     ) {
     }
 
@@ -75,6 +76,11 @@ class ArticleController extends AbstractController
         $offset = ($page - 1) * self::PAGE_SIZE;
         $slice = array_slice($articles, $offset, self::PAGE_SIZE);
 
+	$rabat = $this->bankService->getBankRabat();
+	error_log("********************************");
+	error_log($rabat);
+	error_log("********************************");
+
         return $this->render('articles/list.html.twig', [
             'articles' => $slice,
             'tags' => array_slice($allTags, 0, 20),
@@ -82,7 +88,8 @@ class ArticleController extends AbstractController
             'active' => $active,
             'page' => $page,
             'totalPages' => $totalPages,
-            'total' => $total,
+	    'total' => $total,
+	    'rabat' => $rabat,
         ]);
     }
 

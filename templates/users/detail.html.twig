@@ -43,6 +43,7 @@
                 {{ include('users/_tab_send.html.twig', {send: send, user: user}) }}
                 {% elseif activeTab == 'buy' %}
                 {{ include('users/_tab_buy.html.twig', {user: user, buy: buy}) }}
+                {{ include('users/_progress_bar.html.twig', {progress: progress}) }}
                 {% elseif activeTab == 'paypal' %}
                 {{ include('users/_tab_paypal.html.twig', {user: user}) }}
             {% endif %}
@@ -53,6 +54,7 @@
         <aside class="user-detail-grid__actions">
             {% if send %}
                 {% include 'users/_default_actions.html.twig' with {send: send, user: user} only %}
+                {% include 'users/_reset_actions.html.twig' with {send: send, user: user} only %}
             {% endif %}
             {% if reset %}
                 {% include 'users/_reset_actions.html.twig' with {send: send, user: user} only %}
