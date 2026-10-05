@@ -50,6 +50,15 @@ class BankService
 	return $bank_user;
     }
 
+    public function getProgress(): ?int {
+    	$bank = $this->getBankUser();
+	$limit = $this->settingsService->getOrDefault('bank.limit', null);
+	if ($bank !== null && $limit !== null){
+		return $bank->getBalance() / $limit * 100;
+	}
+	return null;
+    }
+
     public function getBankRabat(): int {
     	$bank = $this->getBankUser();
 	$limit = $this->settingsService->getOrDefault('bank.limit', null);

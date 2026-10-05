@@ -86,6 +86,7 @@ class UserController extends AbstractController
             'deletable' => $this->transactionService->isDeletable($tx),
         ], $recent);
 
+	$progress = $this->bankService->getProgress();
         return $this->render('users/detail.html.twig', [
             'user' => $user,
             'activeTab' => $tab,
@@ -96,6 +97,7 @@ class UserController extends AbstractController
             'showPaypalTab' => $enabledTabs['paypal'],
             'send' => $sendData,
 	    'buy' => $buyData,
+	    'progress' => $progress,
         ]);
     }
 

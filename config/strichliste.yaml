@@ -2,15 +2,15 @@ parameters:
     strichliste:
 
         bank:
-          name: "test_bank"
-          limit: 1000
+          #name: "test_bank"
+          #limit: 5600
         article:
             enabled: true
             autoOpen: true
             serach: true
 
         common:
-            idleTimeout: 10000 # Time in ms
+            idleTimeout: 100000000 # Time in ms
 
         paypal:
             enabled: false
