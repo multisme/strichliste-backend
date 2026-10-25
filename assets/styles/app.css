@@ -958,7 +958,7 @@ body {
 }
 
 .tab-panel {
-    max-width: 30rem;
+    max-width: 100rem;
     margin: 0 auto 1.5rem;
     padding: 0;
 }
@@ -1042,6 +1042,10 @@ body {
     gap: 1rem;
 }
 
+#reset-grid.step-grid{
+	grid-template-columns: 1fr;
+}
+
 .step-form {
     display: contents;
 }
@@ -1069,6 +1073,11 @@ body {
 .step-btn--red {
     background: var(--buttonRedBackground);
     color: var(--buttonRedFont);
+}
+
+.step-btn--yellow {
+    background: var(--buttonYellowBackground);
+    color: var(--buttonYellowFont);
 }
 
 .step-btn:hover:not(:disabled) {
@@ -1549,6 +1558,14 @@ body {
     white-space: nowrap;
 }
 
+.buy-tab__pill.angebot {
+   padding: 10px;
+}
+
+.buy-tab__pill.angebot div{
+	background-color: white;
+}
+
 .buy-tab__pill:hover {
     box-shadow: var(--level2);
 }
@@ -1567,6 +1584,109 @@ body {
     font-variant-numeric: tabular-nums;
 }
 
+.progress {
+  height: 12px;
+  margin: 30px 0px;
+  background: #ddd;
+  border-radius: 0px;
+}
+
+.progress-fill {
+  position: relative;
+  height: 100%;
+  background: #4caf50;
+  border-radius: inherit;
+  transition: width 0.3s;
+  max-width: 100%
+}
+
+.truck {
+  position: absolute;
+  right: -15px;
+  bottom: -50%;
+  font-size: 28px;
+  transform: translateX(50%) scaleX(-1);
+}
+
+
+.angebot {
+  width: 100%;
+  display: flex;
+  margin: 30px 0px;
+}
+
+.rabat{
+  background-color: white;
+}
+
+.apple-glow {
+  position: relative;
+  display: inline-block;
+  isolation: isolate;
+  border-radius: 20px;
+}
+
+.colors {
+  position: absolute;
+  inset: -6px;
+  z-index: -1;
+  border-radius: inherit;
+  background: #835bff;
+  filter: blur(10px) saturate(1.5) brightness(1.15);
+  pointer-events: none;
+}
+
+.colors::before,
+.colors::after {
+content: "";
+position: absolute;
+inset: -5px;
+border-radius: inherit;
+background:
+radial-gradient(ellipse at 20% 30%, #009dff, transparent 55%),
+radial-gradient(ellipse at 80% 70%, #ff438b, transparent 55%),
+radial-gradient(ellipse at 60% 10%, #ffad43, transparent 50%);
+background-size: 180% 180%;
+animation: drift 5s ease-in-out infinite alternate;
+}
+
+.colors::after {
+background:
+radial-gradient(ellipse at 70% 20%, #bd55ff, transparent 55%),
+radial-gradient(ellipse at 30% 80%, #00d5ff, transparent 50%);
+background-size: 200% 200%;
+animation-duration: 7s;
+animation-direction: alternate-reverse;
+}
+
+@keyframes drift {
+0% {
+background-position: 0% 20%;
+transform: scale(1, 0.95);
+}
+
+35% {
+background-position: 100% 0%;
+transform: scale(1.04, 1.08);
+}
+
+70% {
+background-position: 30% 100%;
+transform: scale(0.98, 1.04);
+}
+
+100% {
+background-position: 100% 70%;
+transform: scale(1.03, 0.98);
+}
+}
+
+    @media (prefers-reduced-motion: reduce) {
+      .colors::before,
+      .colors::after {
+        animation: none;
+      }
+    }
 /* hidden state set by the article-filter controller */
 .buy-tab__pill-form[hidden] {
     display: none !important;

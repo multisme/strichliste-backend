@@ -4,6 +4,7 @@ namespace App\Controller\Ui;
 
 use App\Entity\User;
 use App\Form\CreateTransactionType;
+use App\Form\CreateTransactionResetType;
 use App\Form\CreateUserType;
 use App\Form\EditUserType;
 use App\Form\TransferTransactionType;
@@ -11,6 +12,7 @@ use App\Repository\ArticleRepository;
 use App\Repository\TransactionRepository;
 use App\Repository\UserRepository;
 use App\Service\SettingsService;
+use App\Service\BankService;
 use App\Service\TransactionService;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
@@ -31,6 +33,7 @@ class UserController extends AbstractController
         private readonly TransactionService $transactionService,
         private readonly ArticleRepository $articleRepository,
         private readonly TranslatorInterface $translator,
+        private readonly BankService $bankService,
     ) {
     }
 
@@ -40,6 +43,7 @@ class UserController extends AbstractController
         $enabledTabs = [
             'edit' => true,
             'send' => $this->settings->getOrDefault('payment.transactions.enabled', true) && !$user->isDisabled(),
+	    'reset' => str_starts_with($user->getName(), "#"),
             'buy' => $this->settings->getOrDefault('article.enabled', true) && !$user->isDisabled(),
             'paypal' => $this->settings->getOrDefault('paypal.enabled', false) && !$user->isDisabled(),
         ];
@@ -71,11 +75,19 @@ class UserController extends AbstractController
             'articles' => $this->articleRepository->findBy(['active' => true], ['name' => 'ASC']),
         ] : null;
 
+	$rabat = $this->bankService->getBankRabat();
+	$buyData['articles'] = array_map(function (object $item) use ($rabat): object {
+	    $item->setAmount(((float) $item->getAmount() / $rabat));
+	    return $item;
+	}, $buyData['articles']);
+	
+
         $recentMeta = array_map(fn ($tx) => [
             'tx' => $tx,
             'deletable' => $this->transactionService->isDeletable($tx),
         ], $recent);
 
+	$progress = $this->bankService->getProgress();
         return $this->render('users/detail.html.twig', [
             'user' => $user,
             'activeTab' => $tab,
@@ -85,7 +97,13 @@ class UserController extends AbstractController
             'showBuyTab' => $enabledTabs['buy'],
             'showPaypalTab' => $enabledTabs['paypal'],
             'send' => $sendData,
+<<<<<<< HEAD
+	    'reset' => str_starts_with($user->getName(), "#"),
             'buy' => $buyData,
+=======
+	    'buy' => $buyData,
+	    'progress' => $progress,
+>>>>>>> feature/rabat
         ]);
     }
 
@@ -128,7 +146,7 @@ class UserController extends AbstractController
             (array) $this->settings->getOrDefault('payment.dispense.steps', [])
         );
 
-        return [
+        return  [
             'deposit_enabled' => (bool) $this->settings->getOrDefault('payment.deposit.enabled', true),
             'deposit_custom' => (bool) $this->settings->getOrDefault('payment.deposit.custom', true),
             'deposit_steps' => $depositSteps,
@@ -137,8 +155,9 @@ class UserController extends AbstractController
             'dispense_steps' => $dispenseSteps,
             // one composer for both directions; the clicked submit button supplies direction
             'custom_form' => $this->createForm(CreateTransactionType::class, null, ['user_id' => $user->getId()])->createView(),
+            'reset_form' => $this->createForm(CreateTransactionResetType::class, null, ['user_id' => $user->getId()])->createView(),
             'transfer_form' => $transferForm,
-        ];
+	];
     }
 
     #[Route('/user/active/add', name: 'users_create', methods: ['GET', 'POST'])]

@@ -23,6 +23,7 @@ class TransactionService
 {
     public function __construct(
         private readonly SettingsService $settingsService,
+        private readonly BankService $bankService,
         private readonly EntityManagerInterface $entityManager,
     ) {
         $connection = $this->entityManager->getConnection();
@@ -53,6 +54,52 @@ class TransactionService
 
         return true;
     }
+    
+    /**
+     * @throws AccountBalanceBoundaryException
+     * @throws TransactionBoundaryException
+     * @throws TransactionInvalidException
+     * @throws ParameterNotFoundException
+     */
+    public function doResetTransaction(User $user, ?int $amount, ?string $comment = null): Transaction
+    {
+
+        $senderId = $user->getId();
+
+        return $this->entityManager->wrapInTransaction(function () use ($senderId, $amount, $comment) {
+            $transaction = new Transaction();
+            $transaction->setComment($comment);
+
+            $userRepo = $this->entityManager->getRepository(User::class);
+
+            $u = $userRepo->find($senderId);
+	    if (!$u) {
+	        throw new UserNotFoundException($senderId);
+	    }
+	    $this->lockAndRefresh($u);
+	    $sender = $u;
+
+            $transaction->setUser($sender);
+            $transaction->setAmount($amount);
+
+            $sender->addBalance($amount);
+            $this->checkAccountBalanceBoundary($sender);
+
+            $this->entityManager->persist($transaction);
+            $this->entityManager->persist($sender);
+
+            return $transaction;
+        });
+    }
+
+    /**
+     * Deposit (positive) or dispense (negative) cents on a single user account.
+     */
+    public function resetForUser(User $user, int $cents, ?string $comment = null): Transaction
+    {
+        return $this->doResetTransaction($user, $cents, $comment);
+    }
+
 
     /**
      * @throws AccountBalanceBoundaryException
@@ -101,8 +148,9 @@ class TransactionService
 
                 $transaction->setQuantity($quantity ?: 1);
 
+		$rabat = $this->bankService->getBankRabat();
                 if (null === $amount) {
-                    $amount = $article->getAmount() * $transaction->getQuantity() * -1;
+                    $amount = $article->getAmount() * $transaction->getQuantity() * -1 / $rabat;
                 }
 
                 $transaction->setArticle($article);
@@ -173,6 +221,11 @@ class TransactionService
 
     public function purchaseArticle(User $user, Article $article, int $quantity = 1, ?string $comment = null): Transaction
     {
+	$bank = $this->bankService->getBankUser();
+	if ($bank !== null){
+		$bankId = $bank->getId();
+        	return $this->doTransaction($user, null, $comment, $quantity, $article->getId(), $bankId);
+	}
         return $this->doTransaction($user, null, $comment, $quantity, $article->getId());
     }
 

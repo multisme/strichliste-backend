@@ -1,0 +1,26 @@
+{# without the guard the card renders as an empty white box when nothing is enabled #}
+{# one CreateTransactionType view names the fields for the step forms and the custom row #}
+{%- set form = send.reset_form -%}
+<div class="step-card">
+{% if form %}
+    <div class="step-group" role="group" aria-labelledby="deposit-caption">
+	<p class="step-caption" id="reset-caption">{{ 'Reset'|trans }}</p>
+	<div id="reset-grid" class="step-grid">
+		<form method="post" action="{{ path('transactions_reset', {id: user.id}) }}" class="step-form">
+		    <input
+			type="hidden"
+			name="{{ form._token.vars.full_name }}"
+			value="{{ form._token.vars.value }}"
+		    />
+		    <button
+			type="submit"
+			class="step-btn step-btn--yellow"
+			{% if false %} disabled aria-describedby="deposit-disabled-help"{% endif %}
+		    >
+			{{ "Reset balance" | upper }}
+		    </button>
+		</form>
+	</div>
+    </div>
+{% endif %}
+</div>

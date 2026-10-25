@@ -1,0 +1,17 @@
+
+{% if progress %}
+{% if progress < 100 %}
+	<div id="progress" class="progress" >
+		<div class="progress-fill" style="width: {{progress}}%">
+	    <span class="truck">🚚</span>
+	  </div>
+	</div>
+{% else %}
+	<div class="apple-glow angebot">
+    	<span class="colors" aria-hidden="true"></span>
+		<marquee class="rabat">
+			RABAT MODE ACTIVATED
+		</marquee>
+  	</div>
+{% endif %}
+{% endif %}
